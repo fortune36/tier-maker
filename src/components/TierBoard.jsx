@@ -1,21 +1,24 @@
+import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import SortableTier from "./SortableTier";
 import DroppableTier from "./DroppableTier";
 
-function TierBoard({ tiers, activeId }) {
-    return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
-        {Object.entries(tiers)
-          .filter(([tierId]) => tierId !== "tier-Z")
-          .map(([tierId, tier]) => (
-            <DroppableTier
-              key={tierId}
-              tierId={tierId}
-              label={tier.label}
-              pokemons={tier.pokemons}
-              activeId={activeId}  // ← ✅ ここでも渡す！
-            />
-          ))}
-      </div>
-    );
-  }
+function TierBoard({ tiers, tierOrder, activeId, onPokemonClick, isDragging }) {
+  return (
+    <SortableContext items={tierOrder} strategy={verticalListSortingStrategy}>
+      {tierOrder.map((tierId) => (
+        <SortableTier key={tierId} tierId={tierId} label={tiers[tierId].label}>
+          <DroppableTier
+            tierId={tierId}
+            label={tiers[tierId].label}
+            pokemons={tiers[tierId].pokemons}
+            activeId={activeId}
+            onPokemonClick={onPokemonClick}
+            isDragging={isDragging} // ✅ 追加！
+          />
+        </SortableTier>
+      ))}
+    </SortableContext>
+  );
+}
 
 export default TierBoard;
